@@ -98,11 +98,11 @@ const (
 func mapRead(decoder *codec.Decoder, decodeValue func(isNil bool) interface{}) ps.Map {
 	z, r := codec.GenHelperDecoder(decoder)
 	if r.TryDecodeAsNil() {
-		return ps.NewMap()
+		return NewCustomHashMap()
 	}
 
 	length := r.ReadMapStart()
-	out := ps.NewMap()
+	out := NewCustomHashMap()
 	for i := 0; length < 0 || i < length; i++ {
 		if length < 0 && r.CheckBreak() {
 			break

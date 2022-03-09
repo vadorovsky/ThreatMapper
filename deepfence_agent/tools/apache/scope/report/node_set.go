@@ -26,7 +26,7 @@ func MakeNodeSet(nodes ...Node) NodeSet {
 
 // Copy returns a value copy of the Nodes.
 func (n NodeSet) Copy() NodeSet {
-	result := ps.NewMap()
+	result := NewCustomHashMap()
 	n.ForEach(func(node Node) {
 		result = result.UnsafeMutableSet(node.ID, node)
 	})
@@ -36,7 +36,7 @@ func (n NodeSet) Copy() NodeSet {
 // UnsafeAdd adds a node to the NodeSet. Only call this if n has one owner.
 func (n *NodeSet) UnsafeAdd(node Node) {
 	if n.psMap == nil {
-		n.psMap = ps.NewMap()
+		n.psMap =NewCustomHashMap()
 	}
 	n.psMap = n.psMap.UnsafeMutableSet(node.ID, node)
 }
@@ -48,7 +48,7 @@ func (n NodeSet) Add(nodes ...Node) NodeSet {
 	}
 	result := n.psMap
 	if result == nil {
-		result = ps.NewMap()
+		result = NewCustomHashMap()
 	}
 	for _, node := range nodes {
 		result = result.Set(node.ID, node)
@@ -78,7 +78,7 @@ func (n *NodeSet) UnsafeMerge(other NodeSet) {
 		return
 	}
 	if n.psMap == nil {
-		n.psMap = ps.NewMap()
+		n.psMap = NewCustomHashMap()
 	}
 	other.psMap.ForEach(func(key string, otherVal interface{}) {
 		n.psMap = n.psMap.UnsafeMutableSet(key, otherVal)

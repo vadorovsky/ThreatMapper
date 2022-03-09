@@ -9,6 +9,7 @@ import (
 	"github.com/ugorji/go/codec"
 	"github.com/weaveworks/ps"
 
+	"github.com/weaveworks/scope/report"
 	"github.com/weaveworks/scope/test/reflect"
 )
 
@@ -37,7 +38,7 @@ type PluginSpecs struct {
 }
 
 // EmptyPluginSpecs is the empty set of plugin specs.
-var EmptyPluginSpecs = PluginSpecs{ps.NewMap()}
+var EmptyPluginSpecs = PluginSpecs{report.NewCustomHashMap()}
 
 // MakePluginSpecs makes a new PluginSpecs with the given plugin specs.
 func MakePluginSpecs(specs ...PluginSpec) PluginSpecs {
@@ -49,7 +50,7 @@ func MakePluginSpecs(specs ...PluginSpec) PluginSpecs {
 func (n PluginSpecs) Add(specs ...PluginSpec) PluginSpecs {
 	result := n.psMap
 	if result == nil {
-		result = ps.NewMap()
+		result = report.NewCustomHashMap()
 	}
 	for _, spec := range specs {
 		result = result.Set(spec.ID, spec)
@@ -127,7 +128,7 @@ func (n PluginSpecs) String() string {
 	}
 	psMap := n.psMap
 	if psMap == nil {
-		psMap = ps.NewMap()
+		psMap = report.NewCustomHashMap()
 	}
 	for _, k := range psMap.Keys() {
 		keys = append(keys, k)
