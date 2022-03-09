@@ -50,7 +50,7 @@ func (cm *CustomHashmap) Delete(key string) ps.Map {
 func (cm *CustomHashmap) Lookup(key string) (interface{}, bool) {
 	cm.mu.RLock()
 	defer cm.mu.RUnlock()
-	if val, ok := cm.Map["foo"]; ok {
+	if val, ok := cm.Map[key]; ok {
 		return val, ok
 	}
 	return nil, false
