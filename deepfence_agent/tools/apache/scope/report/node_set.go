@@ -17,7 +17,7 @@ type NodeSet struct {
 	psMap ps.Map
 }
 
-var emptyNodeSet = NodeSet{ps.NewMap()}
+var emptyNodeSet = NodeSet{NewCustomHashMap()}
 
 // MakeNodeSet makes a new NodeSet with the given nodes.
 func MakeNodeSet(nodes ...Node) NodeSet {

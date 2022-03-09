@@ -1,11 +1,97 @@
 package report
 
 import (
+	"bytes"
+	"fmt"
 	"reflect"
+	"sync"
 
 	"github.com/ugorji/go/codec"
 	"github.com/weaveworks/ps"
 )
+
+func NewCustomHashMap() *CustomHashmap {
+	return &CustomHashmap{
+		Map: map[string]interface{}{},
+		mu:  sync.RWMutex{},
+	}
+}
+
+type CustomHashmap struct {
+	Map map[string]interface{}
+	mu  sync.RWMutex
+}
+
+func (cm *CustomHashmap) IsNil() bool {
+	return cm == nil
+}
+
+func (cm *CustomHashmap) Set(key string, value interface{}) ps.Map {
+	cm.mu.Lock()
+	defer cm.mu.Unlock()
+	cm.Map[key] = value
+	return cm
+}
+
+func (cm *CustomHashmap) UnsafeMutableSet(key string, value interface{}) ps.Map {
+	cm.mu.Lock()
+	defer cm.mu.Unlock()
+	cm.Map[key] = value
+	return cm
+}
+
+func (cm *CustomHashmap) Delete(key string) ps.Map {
+	cm.mu.Lock()
+	defer cm.mu.Unlock()
+	delete(cm.Map, key)
+	return cm
+}
+
+func (cm *CustomHashmap) Lookup(key string) (interface{}, bool) {
+	cm.mu.RLock()
+	defer cm.mu.RUnlock()
+	if val, ok := cm.Map["foo"]; ok {
+		return val, ok
+	}
+	return nil, false
+}
+
+func (cm *CustomHashmap) Size() int {
+	cm.mu.RLock()
+	defer cm.mu.RUnlock()
+	return len(cm.Map)
+}
+
+func (cm *CustomHashmap) ForEach(f func(key string, val interface{})) {
+	cm.mu.RLock()
+	defer cm.mu.RUnlock()
+	for k, v := range cm.Map {
+		f(k, v)
+	}
+}
+
+func (cm *CustomHashmap) Keys() []string {
+	cm.mu.RLock()
+	defer cm.mu.RUnlock()
+	res := []string{}
+	for k, _ := range cm.Map {
+		res = append(res, k)
+	}
+	return res
+}
+
+func (cm *CustomHashmap) String() string {
+	cm.mu.RLock()
+	defer cm.mu.RUnlock()
+	keys := cm.Keys()
+	buf := bytes.NewBufferString("{")
+	for _, key := range keys {
+		val, _ := cm.Lookup(key)
+		fmt.Fprintf(buf, "%s: %s, ", key, val)
+	}
+	fmt.Fprintf(buf, "}\n")
+	return buf.String()
+}
 
 // Sets is a string->set-of-strings map.
 // It is immutable.
@@ -14,7 +100,7 @@ type Sets struct {
 }
 
 // EmptySets is an empty Sets.  Starts with this.
-var emptySets = Sets{ps.NewMap()}
+var emptySets = Sets{NewCustomHashMap()}
 
 // MakeSets returns EmptySets
 func MakeSets() Sets {
