@@ -102,7 +102,8 @@ func mapRead(decoder *codec.Decoder, decodeValue func(isNil bool) interface{}) p
 	}
 
 	length := r.ReadMapStart()
-	out := NewCustomHashMap()
+	var out ps.Map
+	out = NewCustomHashMap()
 	for i := 0; length < 0 || i < length; i++ {
 		if length < 0 && r.CheckBreak() {
 			break

@@ -26,7 +26,8 @@ func MakeNodeSet(nodes ...Node) NodeSet {
 
 // Copy returns a value copy of the Nodes.
 func (n NodeSet) Copy() NodeSet {
-	result := NewCustomHashMap()
+	var result ps.Map
+	result = NewCustomHashMap()
 	n.ForEach(func(node Node) {
 		result = result.UnsafeMutableSet(node.ID, node)
 	})
