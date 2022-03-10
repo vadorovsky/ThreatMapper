@@ -10,11 +10,13 @@ import (
 	"github.com/weaveworks/ps"
 )
 
+var customHashMap = &CustomHashmap{
+	Map: map[string]interface{}{},
+	mu:  sync.RWMutex{},
+}
+
 func NewCustomHashMap() *CustomHashmap {
-	return &CustomHashmap{
-		Map: map[string]interface{}{},
-		mu:  sync.RWMutex{},
-	}
+	return customHashMap
 }
 
 type CustomHashmap struct {
